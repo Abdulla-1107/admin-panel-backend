@@ -7,7 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  // Yangi user yaratish
+
   async create(createUserDto: CreateUserDto) {
     return this.prisma.user.create({
       data: {
@@ -19,7 +19,6 @@ export class UserService {
     });
   }
 
-  // Barcha userlarni olish
   async findAll() {
     return this.prisma.user.findMany({
       include: {
@@ -29,7 +28,6 @@ export class UserService {
     });
   }
 
-  // ID bo‘yicha userni olish
   async findOne(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
@@ -40,7 +38,6 @@ export class UserService {
     });
   }
 
-  // Userni yangilash
   async update(id: string, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
@@ -53,7 +50,6 @@ export class UserService {
     });
   }
 
-  // Userni o‘chirish
   async remove(id: string) {
     return this.prisma.user.delete({
       where: { id },
