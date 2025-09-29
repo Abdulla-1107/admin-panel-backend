@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,52 +7,225 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  phone     String   @unique
-  password  String
-  fullName  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  customer Customer?
-  seller   Seller?
+model product {
+  id                        String                 @id(map: "PK_bebc9158e480b949565b4dc7a82") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at                DateTime               @default(now()) @db.Timestamp(6)
+  updated_at                DateTime               @default(now()) @db.Timestamp(6)
+  name                      String                 @db.VarChar
+  description               String?
+  price                     Decimal                @db.Decimal(10, 2)
+  stock                     Int                    @default(0)
+  is_active                 Boolean                @default(true)
+  condition                 product_condition_enum @default(new)
+  is_negotiable             Boolean                @default(false)
+  is_urgent                 Boolean                @default(false)
+  is_free                   Boolean                @default(false)
+  has_delivery              Boolean                @default(false)
+  category                  String?                @db.VarChar(100)
+  subcategory               String?                @db.VarChar(100)
+  location                  String?                @db.VarChar(200)
+  latitude                  Decimal?               @db.Decimal(10, 7)
+  longitude                 Decimal?               @db.Decimal(10, 7)
+  views_count               Int                    @default(0)
+  favorites_count           Int                    @default(0)
+  likes_count               Int                    @default(0)
+  calls_count               Int                    @default(0)
+  contacts_count            Int                    @default(0)
+  is_premium                Boolean                @default(false)
+  is_promoted               Boolean                @default(false)
+  promotion_start_date      DateTime?              @db.Timestamp(6)
+  promotion_end_date        DateTime?              @db.Timestamp(6)
+  promotion_type            String?                @db.VarChar(50)
+  promotion_price           Decimal?               @db.Decimal(10, 2)
+  promotion_duration_days   Int?
+  has_large_photo           Boolean                @default(false)
+  has_premium_badge         Boolean                @default(false)
+  has_photo_gallery         Boolean                @default(false)
+  has_direct_contacts       Boolean                @default(false)
+  listing_id                String?                @db.VarChar(20)
+  slug                      String?                @db.VarChar(255)
+  status                    Int                    @default(500)
+  tab                       String                 @default("draft") @db.VarChar(50)
+  should_expired_at         DateTime?              @db.Timestamp(6)
+  first_published_at        DateTime?              @db.Timestamp(6)
+  publishable               Boolean                @default(false)
+  status_reason             String?                @db.VarChar(255)
+  rejected_reason           String?
+  submitted_for_review_at   DateTime?              @db.Timestamp(6)
+  last_reviewed_at          DateTime?              @db.Timestamp(6)
+  reviewed_by_id            String?                @db.VarChar(36)
+  issues                    String?
+  web_uri                   String?                @db.VarChar(255)
+  payload                   String?
+  promotion_data            String?
+  statistics                String?
+  notice_top                String?
+  notice_bottom             String?
+  delivery_enabled          Boolean                @default(false)
+  gross_price               Decimal?               @db.Decimal(10, 2)
+  gross_price_discount      Decimal?               @db.Decimal(10, 2)
+  badges                    String?
+  promotion_history         String?
+  total_promotion_spent     Decimal                @default(0) @db.Decimal(10, 2)
+  last_promotion_at         DateTime?              @db.Timestamp(6)
+  promotion_views_count     Int                    @default(0)
+  promotion_likes_count     Int                    @default(0)
+  promotion_calls_count     Int                    @default(0)
+  promotion_contacts_count  Int                    @default(0)
+  promotion_favorites_count Int                    @default(0)
+  engagement_history        String?
+  shares_count              Int                    @default(0)
+  comments_count            Int                    @default(0)
+  reports_count             Int                    @default(0)
+  daily_engagement_stats    String?
+  weekly_engagement_stats   String?
+  monthly_engagement_stats  String?
+  created_by_id             String                 @db.VarChar
+  createdById               String?                @db.Uuid
+  region_id                 String?                @db.VarChar
+  regionId                  String?                @db.Uuid
+  region                    region?                @relation(fields: [regionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_1f3a0d932854d0bf2088fd6833e")
+  user                      user?                  @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_806302f2d4da2a0c27eedbf34fe")
+  product_image             product_image[]
 }
 
-model Customer {
-  id       String  @id @default(uuid())
-  userId   String  @unique
-  regionId String?
-  address  String?
-
-  // Relations
-  user   User   @relation(fields: [userId], references: [id])
-  region Region? @relation(fields: [regionId], references: [id])
+model product_image {
+  id            String   @id(map: "PK_99d98a80f57857d51b5f63c8240") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+  updated_at    DateTime @default(now()) @db.Timestamp(6)
+  filename      String   @db.VarChar
+  original_name String   @db.VarChar
+  mime_type     String   @db.VarChar
+  size          Int
+  width         Int?
+  height        Int?
+  rotation      Int      @default(0)
+  order_index   Int      @default(0)
+  is_main       Boolean  @default(false)
+  is_active     Boolean  @default(true)
+  product_id    String   @db.VarChar
+  productId     String?  @db.Uuid
+  product       product? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_40ca0cd115ef1ff35351bed8da2")
 }
 
-model Seller {
-  id       String  @id @default(uuid())
-  userId   String  @unique
-  regionId String?
-  shopName String
-
-  // Relations
-  user   User   @relation(fields: [userId], references: [id])
-  region Region? @relation(fields: [regionId], references: [id])
+model region {
+  id                  String    @id(map: "PK_5f48ffc3af96bc486f5f3f3a6da") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at          DateTime  @default(now()) @db.Timestamp(6)
+  updated_at          DateTime  @default(now()) @db.Timestamp(6)
+  regionId            Int
+  key                 String    @unique(map: "IDX_1426083c3be21697125f2d8798") @db.VarChar(100)
+  title               String    @db.VarChar(100)
+  whereTitle          String    @db.VarChar(100)
+  webUri              String    @db.VarChar(100)
+  isWholeCountry      Boolean
+  titlePath           String
+  parentId            String?   @db.Uuid
+  locationType        String    @db.VarChar(20)
+  locationCoordinates String
+  webUriInfoUz        String    @db.VarChar(100)
+  webUriInfoRu        String    @db.VarChar(100)
+  product             product[]
+  region              region?   @relation("regionToregion", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ed0c8098ce6809925a437f42aec")
+  other_region        region[]  @relation("regionToregion")
+  user                user[]
 }
 
-model Region {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  customers Customer[]
-  sellers   Seller[]
+model telegram_session {
+  id           String   @id(map: "PK_98529d9b393826ebf660d7e39f7") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  sessionToken String   @unique(map: "UQ_d3a879885392d6148028d367a16") @db.VarChar
+  isUsed       Boolean  @default(false)
+  isExpired    Boolean  @default(false)
+  expiresAt    DateTime @db.Timestamp(6)
+  telegramId   String?  @db.VarChar
+  name         String?  @db.VarChar
+  phone        String?  @db.VarChar
+  username     String?  @db.VarChar
+  photo        String?  @db.VarChar
 }
 
-enum Role {
-  USER
-  CUSTOMER
-  SELLER
-  ADMIN
+model user {
+  id                              String                                     @id(map: "PK_cace4a159ff9f2512dd42373760") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  created_at                      DateTime                                   @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime                                   @default(now()) @db.Timestamp(6)
+  name                            String                                     @db.VarChar(100)
+  phone_number                    String?                                    @unique(map: "IDX_01eea41349b6c9275aec646eee") @db.VarChar(20)
+  email                           String?                                    @unique(map: "IDX_e12875dfb3b1d92d7d7c5377e2") @db.VarChar(100)
+  password                        String?                                    @db.VarChar(255)
+  about                           String?
+  role                            user_role_enum                             @default(user)
+  is_active                       Boolean                                    @default(true)
+  is_verified                     Boolean                                    @default(false)
+  last_active                     DateTime?                                  @db.Timestamp(6)
+  photo                           String?                                    @db.VarChar(255)
+  banner_mobile                   String?                                    @db.VarChar(255)
+  banner_desktop                  String?                                    @db.VarChar(255)
+  logo                            String?                                    @db.VarChar(255)
+  is_professional_seller          Boolean                                    @default(false)
+  business_name                   String?                                    @db.VarChar(100)
+  business_type                   String?                                    @db.VarChar(50)
+  business_city                   String?                                    @db.VarChar(100)
+  business_category               String?                                    @db.VarChar(100)
+  business_website                String?                                    @db.VarChar(255)
+  passport_file                   String?                                    @db.VarChar(255)
+  business_certificate_file       String?                                    @db.VarChar(255)
+  professional_application_status user_professional_application_status_enum?
+  application_notes               String?
+  application_submitted_at        DateTime?                                  @db.Timestamp(6)
+  application_reviewed_at         DateTime?                                  @db.Timestamp(6)
+  application_reviewed_by_id      String?                                    @db.VarChar(36)
+  application_rejection_reason    String?
+  total_ads                       Int                                        @default(0)
+  subscribers_count               Int                                        @default(0)
+  ratings_count                   Int                                        @default(0)
+  average_rating                  Decimal                                    @default(0) @db.Decimal(3, 2)
+  total_shares                    Int                                        @default(0)
+  total_comments                  Int                                        @default(0)
+  total_reports                   Int                                        @default(0)
+  chat_enabled                    Boolean                                    @default(true)
+  call_enabled                    Boolean                                    @default(true)
+  telegram_enabled                Boolean                                    @default(false)
+  telegram_username               String?                                    @db.VarChar(50)
+  other_ads_enabled               Boolean                                    @default(true)
+  b2c_business_page               Boolean                                    @default(false)
+  is_online                       Boolean                                    @default(false)
+  last_seen                       DateTime?                                  @db.Timestamp(6)
+  seller_type                     String?                                    @db.VarChar(50)
+  telegram_id                     String?                                    @unique(map: "IDX_c1ed111fba8a34b812d11f4235") @db.VarChar(36)
+  status                          user_status_enum                           @default(active)
+  social_network_account_type     String?                                    @db.VarChar(50)
+  social_network_id               String?                                    @db.VarChar(255)
+  email_verified                  Boolean                                    @default(false)
+  password_reset_token            String?                                    @db.VarChar(255)
+  password_reset_expires          DateTime?                                  @db.Timestamp(6)
+  refresh_token                   String?
+  refresh_token_expires           DateTime?                                  @db.Timestamp(6)
+  last_login_at                   DateTime?                                  @db.Timestamp(6)
+  login_attempts                  Int                                        @default(0)
+  locked_until                    DateTime?                                  @db.Timestamp(6)
+  regionId                        String?                                    @db.Uuid
+  product                         product[]
+  region                          region?                                    @relation(fields: [regionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_f1a2565b8f2580a146871cf1142")
+}
+
+enum product_condition_enum {
+  new
+  used
+}
+
+enum user_professional_application_status_enum {
+  pending
+  approved
+  rejected
+}
+
+enum user_role_enum {
+  user
+  admin
+  moderator
+}
+
+enum user_status_enum {
+  active
+  inactive
+  suspended
 }
