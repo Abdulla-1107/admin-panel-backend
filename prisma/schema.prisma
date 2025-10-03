@@ -222,6 +222,8 @@ enum user_role_enum {
   user
   admin
   moderator
+  operator
+  superAdmin
 }
 
 enum user_status_enum {

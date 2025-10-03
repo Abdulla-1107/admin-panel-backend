@@ -6,23 +6,34 @@ import {
   Patch,
   Param,
   Delete,
+<<<<<<< HEAD
+=======
+  Query,
+>>>>>>> ac445f7e4d87da5b3b5022777e00864fb2e9886c
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { UserQueryDto } from './dto/query.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
+  @Post('/login')
+  login(@Body() loginUserDto: LoginUserDto) {
+    return this.userService.login(loginUserDto);
+  }
+
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() query: UserQueryDto) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')
