@@ -13,6 +13,8 @@ export enum Role {
   user = 'user',
   admin = 'admin',
   superadmin = 'superAdmin',
+  moderator = 'moderator',
+  operator = 'operator',
 }
 
 export class CreateUserDto {
@@ -29,7 +31,7 @@ export class CreateUserDto {
   @ApiProperty({ example: '+998901234567', description: 'Telefon raqami' })
   @IsOptional()
   @IsString()
-  phone?: string;
+  phone_number?: string;
 
   @ApiProperty({ example: 'myStrongPassword123', description: 'Parol' })
   @IsNotEmpty()
@@ -53,12 +55,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsBoolean()
   is_verified?: boolean;
-
-  @ApiProperty({
-    example: 'https://example.com/avatar.png',
-    description: 'Profil rasmi URL',
-  })
-  @IsOptional()
-  @IsString()
-  profileImage?: string;
 }
