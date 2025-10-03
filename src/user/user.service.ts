@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, Role } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -56,9 +56,6 @@ export class UserService {
     return result;
   }
 
-<<<<<<< HEAD
-  async login() {}
-=======
   async login(loginUserDto: LoginUserDto) {
     const checkUser = await this.prisma.user.findFirst({
       where: { email: loginUserDto.email },
@@ -80,7 +77,6 @@ export class UserService {
 
     return { token };
   }
->>>>>>> ac445f7e4d87da5b3b5022777e00864fb2e9886c
 
   async findAll(query: UserQueryDto) {
     const {
