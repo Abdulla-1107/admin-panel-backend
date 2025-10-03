@@ -22,7 +22,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     // Telefon raqamni tekshirish
     const checkPhone = await this.prisma.user.findFirst({
-      where: { phone_number: createUserDto.phone },
+      where: { phone_number: createUserDto.phone_number },
     });
     if (checkPhone) {
       throw new BadRequestException('Ushbu telefon raqam foydalanilgan');
@@ -43,7 +43,7 @@ export class UserService {
     const newUser = await this.prisma.user.create({
       data: {
         name: createUserDto.name,
-        phone_number: createUserDto.phone,
+        phone_number: createUserDto.phone_number,
         email: createUserDto.email,
         password: newPassword,
         role: createUserDto.role,
@@ -86,6 +86,7 @@ export class UserService {
       order = 'desc',
       search,
       role,
+      status,
     } = query;
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -93,7 +94,6 @@ export class UserService {
 
     const where: any = {};
 
-    // 🔍 Search faqat name va phone_number bo‘yicha
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
@@ -104,6 +104,10 @@ export class UserService {
     // 🎭 Filter by role
     if (role) {
       where.role = role;
+    }
+
+    if (status) {
+      where.status = status;
     }
 
     const [data, total] = await this.prisma.$transaction([
@@ -134,7 +138,38 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return;
+    // 1. User bor-yo‘qligini tekshiramiz
+    const checkUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!checkUser) {
+      throw new NotFoundException('User topilmadi');
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        name: updateUserDto.name,
+        email: updateUserDto.email,
+        phone_number: updateUserDto.phone_number,
+        password: updateUserDto.password,
+        about: updateUserDto.about,
+        photo: updateUserDto.photo,
+        status: updateUserDto.status,
+        banner_mobile: updateUserDto.banner_mobile,
+        banner_desktop: updateUserDto.banner_desktop,
+        logo: updateUserDto.logo,
+        telegram_username: updateUserDto.telegram_username,
+        business_name: updateUserDto.business_name,
+        business_type: updateUserDto.business_type,
+        business_city: updateUserDto.business_city,
+        business_category: updateUserDto.business_category,
+        business_website: updateUserDto.business_website,
+        passport_file: updateUserDto.passport_file,
+        business_certificate_file: updateUserDto.business_certificate_file,
+        social_network_account_type: updateUserDto.social_network_account_type,
+        social_network_id: updateUserDto.social_network_id,
+        updated_at: new Date(), // ✅ avtomatik update time
+      },
+    });
   }
 
   async remove(id: string) {
@@ -144,5 +179,10 @@ export class UserService {
     }
 
     return { Message: "User o'chirildi" };
+  }
+
+  async getUserCount() {
+    const totalUsers = await this.prisma.user.count();
+    return { totalUsers };
   }
 }

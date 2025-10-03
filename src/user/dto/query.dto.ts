@@ -1,5 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEnum, IsNumberString } from 'class-validator';
+import { UserStatus } from './update-user.dto';
+import { Role } from './create-user.dto';
 
 export class UserQueryDto {
   @ApiPropertyOptional({ example: 1, description: 'Page number' })
@@ -22,13 +24,28 @@ export class UserQueryDto {
   @IsEnum(['asc', 'desc'])
   order?: 'asc' | 'desc';
 
-  @ApiPropertyOptional({ description: 'Search query' })
+  @ApiPropertyOptional({ description: 'Search query by name or phone' })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ example: 'user', description: 'Filter by role' })
+  @ApiPropertyOptional({
+    example: 'user',
+    description: 'Filter by role',
+    enum: Role,
+  })
   @IsOptional()
-  @IsString()
-  role?: string;
+  @IsEnum(Role)
+  role?: Role;
+
+  @ApiPropertyOptional({
+    example: 'active',
+    description: 'Filter by status',
+    enum: UserStatus,
+  })
+  @IsOptional()
+  @IsEnum(UserStatus, {
+    message: 'status faqat active | inactive | suspended bo‘lishi mumkin',
+  })
+  status?: UserStatus;
 }
