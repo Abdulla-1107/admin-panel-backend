@@ -23,4 +23,5 @@ async function bootstrap() {
     `Server successfully started on port ${process.env.PORT} | Swagger: http://localhost:${process.env.PORT}/api`,
   );
 }
+
 bootstrap();
