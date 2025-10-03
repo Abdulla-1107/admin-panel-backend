@@ -1,17 +1,20 @@
--- CreateEnum
-CREATE TYPE "toparmon1"."product_condition_enum" AS ENUM ('new', 'used');
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- CreateEnum
-CREATE TYPE "toparmon1"."user_professional_application_status_enum" AS ENUM ('pending', 'approved', 'rejected');
+CREATE TYPE "product_condition_enum" AS ENUM ('new', 'used');
 
 -- CreateEnum
-CREATE TYPE "toparmon1"."user_role_enum" AS ENUM ('user', 'admin', 'moderator', 'operator', 'superAdmin');
+CREATE TYPE "user_professional_application_status_enum" AS ENUM ('pending', 'approved', 'rejected');
 
 -- CreateEnum
-CREATE TYPE "toparmon1"."user_status_enum" AS ENUM ('active', 'inactive', 'suspended');
+CREATE TYPE "user_role_enum" AS ENUM ('user', 'admin', 'moderator', 'operator', 'superAdmin');
+
+-- CreateEnum
+CREATE TYPE "user_status_enum" AS ENUM ('active', 'inactive', 'suspended');
 
 -- CreateTable
-CREATE TABLE "toparmon1"."product" (
+CREATE TABLE "product" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -20,7 +23,7 @@ CREATE TABLE "toparmon1"."product" (
     "price" DECIMAL(10,2) NOT NULL,
     "stock" INTEGER NOT NULL DEFAULT 0,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "condition" "toparmon1"."product_condition_enum" NOT NULL DEFAULT 'new',
+    "condition" "product_condition_enum" NOT NULL DEFAULT 'new',
     "is_negotiable" BOOLEAN NOT NULL DEFAULT false,
     "is_urgent" BOOLEAN NOT NULL DEFAULT false,
     "is_free" BOOLEAN NOT NULL DEFAULT false,
@@ -93,7 +96,7 @@ CREATE TABLE "toparmon1"."product" (
 );
 
 -- CreateTable
-CREATE TABLE "toparmon1"."product_image" (
+CREATE TABLE "product_image" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -114,7 +117,7 @@ CREATE TABLE "toparmon1"."product_image" (
 );
 
 -- CreateTable
-CREATE TABLE "toparmon1"."region" (
+CREATE TABLE "region" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -135,7 +138,7 @@ CREATE TABLE "toparmon1"."region" (
 );
 
 -- CreateTable
-CREATE TABLE "toparmon1"."telegram_session" (
+CREATE TABLE "telegram_session" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "sessionToken" VARCHAR NOT NULL,
     "isUsed" BOOLEAN NOT NULL DEFAULT false,
@@ -151,7 +154,7 @@ CREATE TABLE "toparmon1"."telegram_session" (
 );
 
 -- CreateTable
-CREATE TABLE "toparmon1"."user" (
+CREATE TABLE "user" (
     "id" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -160,7 +163,7 @@ CREATE TABLE "toparmon1"."user" (
     "email" VARCHAR(100),
     "password" VARCHAR(255),
     "about" TEXT,
-    "role" "toparmon1"."user_role_enum" NOT NULL DEFAULT 'user',
+    "role" "user_role_enum" NOT NULL DEFAULT 'user',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "is_verified" BOOLEAN NOT NULL DEFAULT false,
     "last_active" TIMESTAMP(6),
@@ -176,7 +179,7 @@ CREATE TABLE "toparmon1"."user" (
     "business_website" VARCHAR(255),
     "passport_file" VARCHAR(255),
     "business_certificate_file" VARCHAR(255),
-    "professional_application_status" "toparmon1"."user_professional_application_status_enum",
+    "professional_application_status" "user_professional_application_status_enum",
     "application_notes" TEXT,
     "application_submitted_at" TIMESTAMP(6),
     "application_reviewed_at" TIMESTAMP(6),
@@ -199,7 +202,7 @@ CREATE TABLE "toparmon1"."user" (
     "last_seen" TIMESTAMP(6),
     "seller_type" VARCHAR(50),
     "telegram_id" VARCHAR(36),
-    "status" "toparmon1"."user_status_enum" NOT NULL DEFAULT 'active',
+    "status" "user_status_enum" NOT NULL DEFAULT 'active',
     "social_network_account_type" VARCHAR(50),
     "social_network_id" VARCHAR(255),
     "email_verified" BOOLEAN NOT NULL DEFAULT false,
@@ -216,31 +219,31 @@ CREATE TABLE "toparmon1"."user" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "IDX_1426083c3be21697125f2d8798" ON "toparmon1"."region"("key");
+CREATE UNIQUE INDEX "IDX_1426083c3be21697125f2d8798" ON "region"("key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UQ_d3a879885392d6148028d367a16" ON "toparmon1"."telegram_session"("sessionToken");
+CREATE UNIQUE INDEX "UQ_d3a879885392d6148028d367a16" ON "telegram_session"("sessionToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "IDX_01eea41349b6c9275aec646eee" ON "toparmon1"."user"("phone_number");
+CREATE UNIQUE INDEX "IDX_01eea41349b6c9275aec646eee" ON "user"("phone_number");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "IDX_e12875dfb3b1d92d7d7c5377e2" ON "toparmon1"."user"("email");
+CREATE UNIQUE INDEX "IDX_e12875dfb3b1d92d7d7c5377e2" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "IDX_c1ed111fba8a34b812d11f4235" ON "toparmon1"."user"("telegram_id");
+CREATE UNIQUE INDEX "IDX_c1ed111fba8a34b812d11f4235" ON "user"("telegram_id");
 
 -- AddForeignKey
-ALTER TABLE "toparmon1"."product" ADD CONSTRAINT "FK_1f3a0d932854d0bf2088fd6833e" FOREIGN KEY ("regionId") REFERENCES "toparmon1"."region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "product" ADD CONSTRAINT "FK_1f3a0d932854d0bf2088fd6833e" FOREIGN KEY ("regionId") REFERENCES "region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "toparmon1"."product" ADD CONSTRAINT "FK_806302f2d4da2a0c27eedbf34fe" FOREIGN KEY ("createdById") REFERENCES "toparmon1"."user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "product" ADD CONSTRAINT "FK_806302f2d4da2a0c27eedbf34fe" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "toparmon1"."product_image" ADD CONSTRAINT "FK_40ca0cd115ef1ff35351bed8da2" FOREIGN KEY ("productId") REFERENCES "toparmon1"."product"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "product_image" ADD CONSTRAINT "FK_40ca0cd115ef1ff35351bed8da2" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "toparmon1"."region" ADD CONSTRAINT "FK_ed0c8098ce6809925a437f42aec" FOREIGN KEY ("parentId") REFERENCES "toparmon1"."region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "region" ADD CONSTRAINT "FK_ed0c8098ce6809925a437f42aec" FOREIGN KEY ("parentId") REFERENCES "region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "toparmon1"."user" ADD CONSTRAINT "FK_f1a2565b8f2580a146871cf1142" FOREIGN KEY ("regionId") REFERENCES "toparmon1"."region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "user" ADD CONSTRAINT "FK_f1a2565b8f2580a146871cf1142" FOREIGN KEY ("regionId") REFERENCES "region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

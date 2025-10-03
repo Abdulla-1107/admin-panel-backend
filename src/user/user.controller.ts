@@ -38,7 +38,7 @@ export class UserController {
   async getUserCount() {
     return this.userService.getUserCount();
   }
-  
+
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.findOne(id);
