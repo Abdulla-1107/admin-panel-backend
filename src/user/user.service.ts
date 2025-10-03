@@ -11,9 +11,7 @@ export class UserService {
     return;
   }
 
-  async login(){
-    
-  }
+  async login() {}
 
   async findAll() {
     return this.prisma.user.findMany({});
