@@ -27,3 +27,4 @@ export class ProductService {
     return `This action removes a #${id} product`;
   }
 }
+
